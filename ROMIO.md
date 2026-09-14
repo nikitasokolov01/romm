@@ -43,4 +43,6 @@ Custom endpoints are under `/api/romio`. The stock local-library schema and APIs
 
 Automated tests exercise real application routers with mock providers, redirect responses, credential redaction, permissions, SSRF checks, metadata matching, launch state and download/extraction safeguards. Isolated browser checks cover catalog search, copy selection, preparation state, themes, responsive layouts and device pairing settings. Live VPS checks authenticate to RomM and retrieve real indexed titles and TorBox cache status without fetching ROM bodies. These are separate from live browser gameplay, actual emulator launch, remote browser local-network permission and provider expiry/resume testing, which are not yet verified end to end.
 
+The live homebrew check on 2026-09-14 also verified cached Rock Paper Scissors selection, empty GET/HEAD 307 responses, and an official provider HEAD response with the expected 40,976-byte size, the deployed RomM origin allowed by CORS, and byte-range support advertised. No ROM body was fetched. Prepared exact copies remain searchable when a collection index changes its torrent hash; their provider bindings are still verified on every launch.
+
 This implementation was developed with OpenAI Codex assistance. Upstream RomM notices and AGPL-3.0 licensing are retained. The corresponding fork source is linked in the Discover settings UI.
