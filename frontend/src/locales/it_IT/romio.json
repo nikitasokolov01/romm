@@ -24,6 +24,7 @@
   "discover-hint": "Trova un gioco, scegli la tua copia e gioca sul tuo dispositivo.",
   "empty-hint": "Prova un altro titolo o sistema.",
   "indexing": "L’indicizzazione del catalogo delle fonti è ancora in corso. Compariranno altri giochi man mano che viene completata.",
+  "individual-files-unavailable": "Alcune raccolte nella cache non rendono disponibili i singoli file di gioco corrispondenti. Queste copie non sono disponibili per il download diretto.",
   "match-metadata": "Associa immagini e valutazioni",
   "metadata-hint": "Imposta IGDB_CLIENT_ID e IGDB_CLIENT_SECRET sul server RomM per associare i metadati dei giochi.",
   "metadata-matched": "Associati {n} giochi.",

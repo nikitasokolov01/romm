@@ -24,6 +24,7 @@
   "discover-hint": "Bir oyun bulun, kopyanızı seçin ve cihazınızda oynayın.",
   "empty-hint": "Başka bir oyun adı veya sistem deneyin.",
   "indexing": "Kaynak kataloğu hâlâ dizine ekleniyor. İşlem tamamlandıkça daha fazla oyun görünecek.",
+  "individual-files-unavailable": "Önbellekteki bazı koleksiyonlar eşleşen oyun dosyalarını ayrı ayrı sunmuyor. Bu kopyalar doğrudan indirilemiyor.",
   "match-metadata": "Görselleri ve puanları eşleştir",
   "metadata-hint": "Oyun meta verilerini eşleştirmek için RomM sunucusunda IGDB_CLIENT_ID ve IGDB_CLIENT_SECRET değerlerini ayarlayın.",
   "metadata-matched": "{n} oyun eşleştirildi.",

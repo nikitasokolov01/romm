@@ -24,6 +24,7 @@
   "discover-hint": "尋找遊戲，選擇副本，然後在你的裝置上遊玩。",
   "empty-hint": "請嘗試其他遊戲名稱或系統。",
   "indexing": "來源目錄仍在建立索引。隨著索引建立完成，將顯示更多遊戲。",
+  "individual-files-unavailable": "某些已快取的合集未提供符合的個別遊戲檔案。這些副本無法直接下載。",
   "match-metadata": "比對圖片與評分",
   "metadata-hint": "請在 RomM 伺服器上設定 IGDB_CLIENT_ID 和 IGDB_CLIENT_SECRET，以比對遊戲元數據。",
   "metadata-matched": "已比對 {n} 個遊戲。",

@@ -24,6 +24,7 @@
   "discover-hint": "Najděte hru, vyberte kopii a hrajte na svém zařízení.",
   "empty-hint": "Zkuste jiný název nebo systém.",
   "indexing": "Katalog zdrojů se stále indexuje. S postupem indexování se budou objevovat další hry.",
+  "individual-files-unavailable": "Některé kolekce v mezipaměti neposkytují odpovídající samostatné soubory her. Tyto kopie nejsou dostupné k přímému stažení.",
   "match-metadata": "Přiřadit obrázky a hodnocení",
   "metadata-hint": "Pro přiřazení metadat her nastavte na serveru RomM hodnoty IGDB_CLIENT_ID a IGDB_CLIENT_SECRET.",
   "metadata-matched": "Počet přiřazených her: {n}.",

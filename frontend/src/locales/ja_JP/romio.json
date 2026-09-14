@@ -24,6 +24,7 @@
   "discover-hint": "ゲームを探し、コピーを選んで、お使いのデバイスでプレイしましょう。",
   "empty-hint": "別のタイトルやシステムで検索してください。",
   "indexing": "ソースカタログの索引を作成中です。処理が進むにつれてゲームが追加されます。",
+  "individual-files-unavailable": "一部のキャッシュ済みコレクションでは、該当するゲームの個別ファイルが提供されていません。これらのコピーは直接ダウンロードできません。",
   "match-metadata": "画像と評価を照合",
   "metadata-hint": "ゲームのメタデータを照合するには、RomM サーバーで IGDB_CLIENT_ID と IGDB_CLIENT_SECRET を設定してください。",
   "metadata-matched": "{n} 件のゲームを照合しました。",

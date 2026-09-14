@@ -24,6 +24,7 @@
   "discover-hint": "Găsește un joc, alege o copie și joacă pe dispozitivul tău.",
   "empty-hint": "Încearcă alt titlu sau alt sistem.",
   "indexing": "Catalogul surselor este încă în curs de indexare. Vor apărea mai multe jocuri pe măsură ce indexarea se încheie.",
+  "individual-files-unavailable": "Unele colecții din cache nu oferă fișierele individuale de joc corespunzătoare. Aceste copii nu sunt disponibile pentru descărcare directă.",
   "match-metadata": "Asociază imaginile și evaluările",
   "metadata-hint": "Setează IGDB_CLIENT_ID și IGDB_CLIENT_SECRET pe serverul RomM pentru a asocia metadatele jocurilor.",
   "metadata-matched": "Jocuri asociate: {n}.",

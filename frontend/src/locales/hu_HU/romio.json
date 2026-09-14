@@ -24,6 +24,7 @@
   "discover-hint": "Keress egy játékot, válassz egy példányt, és játssz az eszközödön.",
   "empty-hint": "Próbálj másik címet vagy rendszert.",
   "indexing": "A forráskatalógus indexelése még folyamatban van. Az indexelés előrehaladtával további játékok jelennek meg.",
+  "individual-files-unavailable": "Egyes gyorsítótárazott gyűjtemények nem teszik elérhetővé a megfelelő önálló játékfájlokat. Ezek a példányok nem tölthetők le közvetlenül.",
   "match-metadata": "Képek és értékelések párosítása",
   "metadata-hint": "A játékok metaadatainak párosításához állítsd be az IGDB_CLIENT_ID és az IGDB_CLIENT_SECRET értékét a RomM szerverén.",
   "metadata-matched": "Párosított játékok: {n}.",

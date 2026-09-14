@@ -24,6 +24,7 @@
   "discover-hint": "Busca un juego, elige tu copia y juega en tu dispositivo.",
   "empty-hint": "Prueba con otro título o sistema.",
   "indexing": "El catálogo de fuentes aún se está indexando. Aparecerán más juegos a medida que avance la indexación.",
+  "individual-files-unavailable": "Algunas colecciones en caché no ofrecen archivos individuales de juegos que coincidan. Esas copias no están disponibles para descarga directa.",
   "match-metadata": "Asociar imágenes y valoraciones",
   "metadata-hint": "Configura IGDB_CLIENT_ID e IGDB_CLIENT_SECRET en el servidor de RomM para asociar los metadatos de los juegos.",
   "metadata-matched": "Se han asociado {n} juegos.",

@@ -24,6 +24,7 @@
   "discover-hint": "Znajdź grę, wybierz kopię i graj na swoim urządzeniu.",
   "empty-hint": "Spróbuj innego tytułu lub systemu.",
   "indexing": "Katalog źródeł jest nadal indeksowany. W miarę postępu indeksowania pojawią się kolejne gry.",
+  "individual-files-unavailable": "Niektóre kolekcje w pamięci podręcznej nie udostępniają pasujących pojedynczych plików gier. Tych kopii nie można pobrać bezpośrednio.",
   "match-metadata": "Dopasuj grafiki i oceny",
   "metadata-hint": "Ustaw IGDB_CLIENT_ID i IGDB_CLIENT_SECRET na serwerze RomM, aby dopasować metadane gier.",
   "metadata-matched": "Liczba dopasowanych gier: {n}.",

@@ -172,7 +172,7 @@ async function loadSources() {
       selected.value =
         candidates.value.find(canPrepare) ?? candidates.value[0] ?? null;
     more.value = data.hasMore;
-    offset.value = data.offset + data.items.length;
+    offset.value = data.offset + 100;
     warnings.value = data.warnings
       .map(safeCode)
       .filter((code): code is string => code !== null);
@@ -465,7 +465,15 @@ onScopeDispose(() => {
         v-if="warnings.length"
         type="warning"
         class="mb-4"
-        :text="warnings.join(', ')"
+        :text="
+          warnings
+            .map((code) =>
+              code === 'INDIVIDUAL_FILES_UNAVAILABLE'
+                ? t('romio.individual-files-unavailable')
+                : code,
+            )
+            .join(' ')
+        "
       />
       <RSpinner v-if="restoring || (loading && !candidates.length)" />
       <p v-if="!restoring && !loading && !candidates.length && !job && !choice">

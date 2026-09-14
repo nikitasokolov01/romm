@@ -129,6 +129,51 @@ describe("source preparation lifecycle", () => {
     vi.useRealTimers();
   });
 
+  it("explains when cached collections lack matching individual game files", async () => {
+    mocks.sources.mockResolvedValue({
+      data: {
+        items: [],
+        warnings: [
+          "INDIVIDUAL_FILES_UNAVAILABLE",
+          "PROVIDER_STATUS_UNAVAILABLE",
+        ],
+        offset: 0,
+        hasMore: false,
+      },
+    });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    expect(wrapper.text()).toContain("romio.individual-files-unavailable");
+    expect(wrapper.text()).toContain("PROVIDER_STATUS_UNAVAILABLE");
+    expect(wrapper.text()).not.toContain("INDIVIDUAL_FILES_UNAVAILABLE");
+    expect(mocks.acquire).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
+  it("advances a filtered source page by the API page size", async () => {
+    mocks.sources
+      .mockResolvedValueOnce({
+        data: { items: [candidate], warnings: [], offset: 0, hasMore: true },
+      })
+      .mockResolvedValueOnce({
+        data: { items: [], warnings: [], offset: 100, hasMore: true },
+      })
+      .mockResolvedValueOnce({
+        data: { items: [], warnings: [], offset: 200, hasMore: false },
+      });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    for (const offset of [100, 200]) {
+      await wrapper
+        .findAll("button")
+        .find((button) => button.text() === "common.next-page")!
+        .trigger("click");
+      await flushPromises();
+      expect(mocks.sources).toHaveBeenLastCalledWith(game.id, offset);
+    }
+    wrapper.unmount();
+  });
+
   it("prepares once, displays percentage and starts the browser only when ready", async () => {
     const wrapper = mount(SourceDialog, { props: { game } });
     await flushPromises();

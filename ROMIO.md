@@ -19,6 +19,8 @@ RomM and Romio exchange JSON metadata. RomM's authenticated content endpoint res
 
 The browser player uses RomM's bundled EmulatorJS assets. Per-game ZIP extraction and browser-local save storage happen on the client. Core, BIOS, memory, package layout and provider CORS support still determine whether a particular game can run. Remote saves are not wired into stock RomM cloud-save APIs. Native saves are managed by the selected emulator.
 
+A torrent being cached does not guarantee individual-file access. Live testing found GBA collections exposed by TorBox only as 7 GB and 14 GB generated archives. Romio checks the provider's cached file lists, excludes copies without an exact path/size match, and searches other configured sources. A definitive file-verification failure stops the job so another copy can be chosen. Whole-collection archive downloads and extraction on the VPS are not used as a fallback.
+
 Some TorBox CDN links contain the account key. The personal deployment's owner explicitly enabled those links for their own devices. Treat resolved URLs as sensitive; do not log, share, bookmark or persist them. The Romio addon credential stays on the server. Fresh links are resolved for every launch or resume.
 
 ## Native companion

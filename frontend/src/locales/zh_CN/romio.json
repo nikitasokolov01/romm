@@ -24,6 +24,7 @@
   "discover-hint": "查找游戏，选择副本，然后在你的设备上游玩。",
   "empty-hint": "请尝试其他游戏名称或系统。",
   "indexing": "源目录仍在建立索引。随着索引建立完成，将显示更多游戏。",
+  "individual-files-unavailable": "某些已缓存的合集未提供匹配的单独游戏文件。这些副本无法直接下载。",
   "match-metadata": "匹配图片和评分",
   "metadata-hint": "请在 RomM 服务器上设置 IGDB_CLIENT_ID 和 IGDB_CLIENT_SECRET，以匹配游戏元数据。",
   "metadata-matched": "已匹配 {n} 个游戏。",

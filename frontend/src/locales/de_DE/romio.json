@@ -24,6 +24,7 @@
   "discover-hint": "Finde ein Spiel, wähle deine Kopie und spiele auf deinem Gerät.",
   "empty-hint": "Versuche einen anderen Titel oder ein anderes System.",
   "indexing": "Der Quellenkatalog wird noch indiziert. Mit fortschreitender Indizierung erscheinen weitere Spiele.",
+  "individual-files-unavailable": "Einige Sammlungen im Cache stellen keine passenden einzelnen Spieldateien bereit. Diese Kopien können nicht direkt heruntergeladen werden.",
   "match-metadata": "Bilder und Bewertungen zuordnen",
   "metadata-hint": "Setze IGDB_CLIENT_ID und IGDB_CLIENT_SECRET auf dem RomM-Server, um Spielmetadaten zuzuordnen.",
   "metadata-matched": "{n} Spiele zugeordnet.",

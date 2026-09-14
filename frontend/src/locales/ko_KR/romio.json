@@ -24,6 +24,7 @@
   "discover-hint": "게임을 찾고 사본을 선택하여 내 기기에서 플레이하세요.",
   "empty-hint": "다른 제목이나 시스템으로 검색해 보세요.",
   "indexing": "소스 카탈로그의 색인을 아직 생성 중입니다. 색인 생성이 완료되면서 더 많은 게임이 표시됩니다.",
+  "individual-files-unavailable": "일부 캐시된 컬렉션에서는 일치하는 개별 게임 파일을 제공하지 않습니다. 해당 사본은 직접 다운로드할 수 없습니다.",
   "match-metadata": "이미지 및 평점 매칭",
   "metadata-hint": "게임 메타데이터를 매칭하려면 RomM 서버에서 IGDB_CLIENT_ID와 IGDB_CLIENT_SECRET을 설정하세요.",
   "metadata-matched": "게임 {n}개를 매칭했습니다.",

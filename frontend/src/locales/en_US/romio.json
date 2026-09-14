@@ -24,6 +24,7 @@
   "discover-hint": "Find a game, choose your copy, and play on your device.",
   "empty-hint": "Try another title or system.",
   "indexing": "The source catalog is still being indexed. More games will appear as indexing finishes.",
+  "individual-files-unavailable": "Some cached collections do not expose matching individual game files. Those copies are unavailable for direct download.",
   "match-metadata": "Match artwork and ratings",
   "metadata-hint": "Set IGDB_CLIENT_ID and IGDB_CLIENT_SECRET on the RomM server to match game metadata.",
   "metadata-matched": "Matched {n} games.",
