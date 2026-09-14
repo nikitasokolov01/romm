@@ -65,6 +65,7 @@ export const ROUTES = {
   PLATFORMS_INDEX: "platforms-index",
   COLLECTIONS_INDEX: "collections-index",
   CONTROLLER_DEBUG: "controller-debug",
+  DISCOVER: "discover",
   NOT_FOUND: "404",
 } as const;
 
@@ -172,6 +173,10 @@ const routes = [
     children: [
       {
         path: "",
+        redirect: "/discover",
+      },
+      {
+        path: "library",
         name: ROUTES.HOME,
         meta: {
           title: "settings.home",
@@ -179,6 +184,15 @@ const routes = [
         components: {
           default: () => import("@/views/Home.vue"),
           v2: v2For(ROUTES.HOME),
+        },
+      },
+      {
+        path: "discover",
+        name: ROUTES.DISCOVER,
+        meta: { title: "romio.discover" },
+        components: {
+          default: notFoundComponent,
+          v2: v2For(ROUTES.DISCOVER),
         },
       },
       {

@@ -12,7 +12,8 @@ import type { ComputedRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
-export type NavDestinationId = "home" | "platforms" | "collections" | "search";
+export type NavDestinationId =
+  "home" | "discover" | "platforms" | "collections" | "search";
 
 export interface NavDestination {
   id: NavDestinationId;
@@ -33,11 +34,18 @@ export function useNavDestinations(): {
 
   const destinations = computed<NavDestination[]>(() => [
     {
+      id: "discover",
+      label: t("romio.discover"),
+      ariaLabel: t("romio.discover"),
+      icon: "mdi-compass-outline",
+      to: "/discover",
+    },
+    {
       id: "home",
-      label: t("common.home"),
-      ariaLabel: t("common.home"),
+      label: t("common.library"),
+      ariaLabel: t("common.library"),
       icon: "mdi-home-outline",
-      to: "/",
+      to: "/library",
     },
     {
       id: "platforms",
@@ -66,7 +74,8 @@ export function useNavDestinations(): {
 
   const activeId = computed<NavDestinationId | null>(() => {
     const path = route.path;
-    if (path === "/") return "home";
+    if (path.startsWith("/discover")) return "discover";
+    if (path === "/library") return "home";
     if (path.startsWith("/platform")) return "platforms";
     if (path.startsWith("/collection")) return "collections";
     if (path.startsWith("/search")) return "search";

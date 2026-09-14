@@ -50,6 +50,7 @@ from endpoints.permissions import router as permissions_router
 from endpoints.platform import router as platform_router
 from endpoints.play_sessions import router as play_sessions_router
 from endpoints.recommendations import router as recommendations_router
+from endpoints.romio import router as romio_router
 from endpoints.roms import router as rom_router
 from endpoints.saves import router as saves_router
 from endpoints.screenshots import router as screenshots_router
@@ -71,6 +72,7 @@ from utils import get_version
 from utils.context import (
     ctx_aiohttp_session,
     ctx_httpx_client,
+    ctx_romio_httpx_client,
     initialize_context,
     set_context_middleware,
 )
@@ -84,6 +86,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     async with initialize_context():
         app.state.aiohttp_session = ctx_aiohttp_session.get()
         app.state.httpx_client = ctx_httpx_client.get()
+        app.state.romio_httpx_client = ctx_romio_httpx_client.get()
 
         # Relay backend log lines to admin Socket.IO clients in real time.
         log_forwarder_task: asyncio.Task[None] | None = None
@@ -189,6 +192,7 @@ app.include_router(device_auth_router, prefix="/api")
 app.include_router(play_sessions_router, prefix="/api")
 app.include_router(platform_router, prefix="/api")
 app.include_router(rom_router, prefix="/api")
+app.include_router(romio_router, prefix="/api")
 app.include_router(recommendations_router, prefix="/api")
 app.include_router(music_router, prefix="/api")
 app.include_router(music_playlists_router, prefix="/api")

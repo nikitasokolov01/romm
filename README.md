@@ -1,4 +1,6 @@
 <!-- trunk-ignore-all(markdownlint/MD033) -->
+> **Romio edition:** console discovery, direct provider downloads and a paired PC companion. Read [setup, supported behavior and verification limits](ROMIO.md). This is a custom fork; upstream RomM documentation follows.
+
 <!-- trunk-ignore(markdownlint/MD041) -->
 <div align="center">
   <img src=".github/resources/isotipo.png" height="180px" width="auto" alt="romm logo">

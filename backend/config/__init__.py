@@ -24,6 +24,7 @@ def _get_env(var: str, fallback: str | None = None) -> str | None:
 
 ROMM_BASE_URL: Final[str] = _get_env("ROMM_BASE_URL", "http://0.0.0.0")
 ROMM_PORT: Final[int] = safe_int(_get_env("ROMM_PORT"), 8080)
+ROMIO_TRUSTED_INTERNAL_ORIGIN: Final[str] = _get_env("ROMIO_TRUSTED_INTERNAL_ORIGIN", "")
 
 # GUNICORN
 DEV_MODE: Final[bool] = safe_str_to_bool(_get_env("DEV_MODE"))

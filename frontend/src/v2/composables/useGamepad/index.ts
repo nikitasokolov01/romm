@@ -32,6 +32,7 @@
 import { onBeforeUnmount } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import storePlaying from "@/stores/playing";
+import { focusedFrameOwnsGamepad } from "@/v2/utils/embeddedGamepad";
 import { useInputModality } from "@/v2/composables/useInputModality";
 import {
   closeTopEscapable,
@@ -40,7 +41,13 @@ import {
 
 // AppNav tab order — must match the `tabs` list in
 // `src/v2/components/AppShell/AppNav.vue`. LB/RB cycle through these.
-const NAV_SECTIONS = ["/", "/platforms", "/collections", "/search"] as const;
+const NAV_SECTIONS = [
+  "/discover",
+  "/library",
+  "/platforms",
+  "/collections",
+  "/search",
+] as const;
 
 // Routes where useGamepad's built-in actions (back, activate, section
 // nav, user menu) must NOT fire, so every button stays inspectable in
@@ -151,7 +158,7 @@ export function useGamepad() {
     // Match current section by path prefix so /platform/:id still registers
     // as "/platforms" when LB/RB is pressed from a gallery sub-route.
     const matchIndex = NAV_SECTIONS.findIndex((section) =>
-      section === "/" ? currentPath === "/" : currentPath.startsWith(section),
+      currentPath.startsWith(section),
     );
     // Not on a section at all (e.g. on /rom/:id). Jumping straight to
     // Home is more predictable than silently treating the current page
@@ -271,7 +278,10 @@ export function useGamepad() {
       // B index) quit the game. The exception is an open escapable overlay
       // (the player's exit dialog): translation resumes so the dialog is
       // navigable by pad, and closing it hands the pad back to the game.
-      const gameOwnsInput = playingStore.playing && !hasOpenEscapable();
+      const gameOwnsInput =
+        playingStore.playing &&
+        (!hasOpenEscapable() ||
+          focusedFrameOwnsGamepad(document.activeElement));
       // In that overlay-over-game state only OVERLAY_SAFE_BUTTONS (and
       // the dpad/stick synthetic arrows) translate.
       const overlayOverGame = playingStore.playing && !gameOwnsInput;

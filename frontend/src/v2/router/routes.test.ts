@@ -8,6 +8,13 @@ function leafRouteFor(path: string) {
 }
 
 describe("v2 route resolution", () => {
+  it("keeps local home available alongside the remote discovery route", () => {
+    expect(leafRouteFor("/library").name).toBe(ROUTES.HOME);
+    expect(leafRouteFor("/discover").components?.v2).toBe(
+      v2RouteComponents[ROUTES.DISCOVER],
+    );
+    expect(leafRouteFor("/").redirect).toBe("/discover");
+  });
   it("renders the 404 view for an unmatched URL", () => {
     const leaf = leafRouteFor("/settings/administration");
 

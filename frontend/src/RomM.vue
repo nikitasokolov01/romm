@@ -10,6 +10,7 @@ import {
   watch,
 } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 import { useTheme } from "vuetify";
 import SoundtrackMiniPlayer from "@/components/common/SoundtrackMiniPlayer.vue";
 import { useUiVersion } from "@/composables/useUiVersion";
@@ -47,6 +48,7 @@ languageStore.setLanguage(selectedLanguage.value);
 // imports the API layer and would trigger an API-client ↔ router circular-
 // import TDZ during bootstrap (RomM.vue is the first module main.ts loads).
 const uiVersion = useUiVersion();
+const route = useRoute();
 const themeSetting = useLocalStorage<"auto" | "dark" | "light">(
   "settings.theme",
   "dark",
@@ -95,7 +97,9 @@ watch(
   { immediate: true },
 );
 
-const isV2 = computed(() => uiVersion.value === "v2");
+const isV2 = computed(
+  () => uiVersion.value === "v2" || route.path === "/discover",
+);
 
 // Apply the v2 token scope to <html> when v2 is active. Vuetify teleports
 // overlays (VDialog, VMenu) into `<body> > .v-overlay-container` — which
