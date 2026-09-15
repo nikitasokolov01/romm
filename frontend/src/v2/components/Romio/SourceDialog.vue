@@ -59,6 +59,8 @@ const restoring = ref(false);
 const candidates = ref<RomioCandidate[]>([]);
 const selected = ref<RomioCandidate | null>(null);
 const loading = ref(false);
+const checking = ref(false);
+const statusRetry = ref(false);
 const busy = ref(false);
 const attempted = ref(false);
 const failed = ref(false);
@@ -153,6 +155,28 @@ const percent = computed(() =>
 const state = computed(
   () => nativeJob.value?.state ?? job.value?.state ?? "submitting",
 );
+const providerStage = computed(() => {
+  if (nativeJob.value) return null;
+  switch (job.value?.stage) {
+    case "account_lookup":
+    case "inspect":
+      return t("romio.state-reconciling");
+    case "source_metadata":
+      return t("romio.stage-source-metadata");
+    case "provider_submit":
+      return t("romio.stage-provider-submit");
+    case "verify_file":
+      return t("romio.stage-verify-file");
+    default:
+      return null;
+  }
+});
+const checkedTime = computed(() => {
+  const timestamp = job.value?.checkedAt;
+  return timestamp && Number.isFinite(timestamp)
+    ? new Date(timestamp).toLocaleTimeString()
+    : null;
+});
 
 async function loadSources() {
   loading.value = true;
@@ -185,7 +209,7 @@ async function loadSources() {
 
 function schedule() {
   if (timer) clearTimeout(timer);
-  if (alive.value) timer = setTimeout(() => void checkStatus(), 5000);
+  if (alive.value) timer = setTimeout(() => void checkStatus(), 7000);
 }
 
 async function useExistingNative(
@@ -321,6 +345,10 @@ async function prepare(destination: Target) {
 }
 
 async function checkStatus() {
+  if (checking.value) return;
+  if (timer) clearTimeout(timer);
+  checking.value = true;
+  statusRetry.value = false;
   failed.value = false;
   try {
     if (nativeJob.value) {
@@ -336,9 +364,16 @@ async function checkStatus() {
       if (!alive.value || job.value?.id !== id) return;
       job.value = data;
       await advance();
+    } else if (choice.value) {
+      await restoreChoice();
     }
   } catch {
-    if (alive.value) failed.value = true;
+    if (alive.value) {
+      statusRetry.value = true;
+      schedule();
+    }
+  } finally {
+    if (alive.value) checking.value = false;
   }
 }
 
@@ -387,7 +422,11 @@ async function restoreChoice() {
     job.value = data;
     await advance();
   } catch {
-    if (alive.value) failed.value = true;
+    if (alive.value) {
+      failed.value = true;
+      statusRetry.value = true;
+      schedule();
+    }
   } finally {
     if (alive.value) restoring.value = false;
   }
@@ -409,6 +448,7 @@ async function chooseAnotherCopy() {
   offset.value = 0;
   more.value = false;
   warnings.value = [];
+  statusRetry.value = false;
   await loadSources();
 }
 
@@ -439,6 +479,12 @@ onScopeDispose(() => {
   >
     <template #header>{{ game.title }}</template>
     <template #content>
+      <RAlert
+        v-if="statusRetry"
+        type="warning"
+        class="mb-4"
+        :text="t('romio.status-retry')"
+      />
       <div class="d-flex align-center flex-wrap ga-3 mb-5">
         <RChip>{{ game.systemName }}</RChip
         ><span>{{ t("romio.select-copy") }}</span>
@@ -549,22 +595,38 @@ onScopeDispose(() => {
       <RCard v-if="job || nativeJob" class="pa-5 mb-4">
         <h3 class="mb-3">{{ selected?.title || game.title }}</h3>
         <div class="d-flex justify-space-between mb-3" role="status">
-          <span>{{ t(`romio.state-${state}`) }}</span
-          ><span>{{ Math.round(percent) }}%</span>
+          <span>{{ providerStage ?? t(`romio.state-${state}`) }}</span
+          ><span v-if="!providerStage">{{ Math.round(percent) }}%</span>
         </div>
         <RProgressLinear
           :model-value="percent"
           :indeterminate="
             state === 'submitting' ||
             state === 'reconciling' ||
-            state === 'extracting'
+            state === 'extracting' ||
+            Boolean(providerStage)
           "
           :aria-label="t('romio.preparing')"
         />
         <p v-if="stateCode" class="mt-3">{{ stateCode }}</p>
+        <p v-if="checkedTime && !nativeJob" class="text-caption mt-3">
+          {{ t("romio.last-checked", { time: checkedTime }) }}
+        </p>
+        <p
+          v-if="
+            job?.state === 'downloading' &&
+            !nativeJob &&
+            percent === 0 &&
+            checkedTime &&
+            !providerStage
+          "
+          class="text-caption mt-3"
+        >
+          {{ t("romio.progress-delayed") }}
+        </p>
         <p class="text-caption mt-4">{{ t("romio.close-progress") }}</p>
         <div class="d-flex ga-3 mt-4">
-          <RBtn variant="text" @click="checkStatus">{{
+          <RBtn variant="text" :loading="checking" @click="checkStatus">{{
             t("romio.check-status")
           }}</RBtn
           ><RBtn

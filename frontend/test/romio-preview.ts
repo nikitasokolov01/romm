@@ -3,7 +3,11 @@ import { createApp, h } from "vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 import { VApp } from "vuetify/components";
 import "@/plugins/router";
-import type { RomioCandidateSchema, RomioGameSchema } from "@/__generated__";
+import type {
+  RomioCandidateSchema,
+  RomioGameSchema,
+  RomioHomeSchema,
+} from "@/__generated__";
 import i18n, { loadLocale } from "@/locales";
 import vuetify from "@/plugins/vuetify";
 import api from "@/services/api";
@@ -13,27 +17,15 @@ import { installBreakpointAttribute } from "@/v2/composables/useBreakpoint";
 import { useInputModality } from "@/v2/composables/useInputModality";
 import "@/styles/fonts.css";
 import "@/v2/styles/global.css";
+import homeFixture from "./romio-home.fixture.json";
 
+const fixtureHome: RomioHomeSchema = { ...homeFixture, language: "en" };
+const sections = fixtureHome.sections;
 const games: RomioGameSchema[] = [
-  "Orbit Quest",
-  "Pixel Racing",
-  "Garden Adventure",
-  "Pocket Monsters",
-  "Solar Runner",
-  "Moon Explorer",
-  "Crystal Journey",
-  "Circuit Rider",
-].map((title, index) => ({
-  id: (index + 1).toString(16).padStart(64, "0"),
-  title,
-  system: index % 2 ? "gba" : "nes",
-  systemName: index % 2 ? "Game Boy Advance" : "Nintendo Entertainment System",
-  rommSlug: index % 2 ? "gba" : "nes",
-  browserCore: index % 2 ? "gba" : "nes",
-  sourceCount: 3,
-  awards: [],
-  coverUrl: null,
-}));
+  ...new Map(
+    sections.flatMap((section) => section.items).map((game) => [game.id, game]),
+  ).values(),
+];
 const candidate: RomioCandidateSchema = {
   id: "a".repeat(64),
   title: "Orbit Quest (USA)",
@@ -90,8 +82,20 @@ api.defaults.adapter = async (config) => {
       ],
       categories: [
         { id: "all", name: "All games" },
-        { id: "retro", name: "Retro classics" },
+        ...sections.map((section) => ({ id: section.id, name: section.title })),
       ],
+    };
+  else if (path === "/romio/home")
+    data = {
+      language: "en",
+      sections: sections.map((section) => ({
+        ...section,
+        items: section.items.filter(
+          (game) =>
+            config.params.system === "all" ||
+            game.system === config.params.system,
+        ),
+      })),
     };
   else if (path === "/romio/metadata")
     data = { provider: "igdb", configured: false, maxBatchSize: 12 };
@@ -106,7 +110,10 @@ api.defaults.adapter = async (config) => {
         (!params.q ||
           game.title.toLowerCase().includes(params.q.toLowerCase())) &&
         (params.system === "all" || game.system === params.system) &&
-        (params.category === "all" || game.system === "nes"),
+        (params.category === "all" ||
+          sections
+            .find((section) => section.id === params.category)
+            ?.items.some((item) => item.id === game.id)),
     );
     data = { items, offset: 0, hasMore: false, total: items.length };
   } else if (path.endsWith("/sources")) {

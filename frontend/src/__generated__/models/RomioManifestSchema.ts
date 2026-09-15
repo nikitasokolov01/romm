@@ -13,4 +13,5 @@ export type RomioManifestSchema = {
     categories: Array<RomioCategorySchema>;
     capabilities: RomioCapabilitiesSchema;
     catalogReady: boolean;
+    language?: 'en' | 'es' | 'fr' | 'ru' | 'zh' | 'ja';
 };

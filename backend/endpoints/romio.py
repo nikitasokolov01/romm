@@ -1,9 +1,6 @@
 import re
 from typing import Annotated
 
-from fastapi import Path, Query, Request, Response
-from fastapi.responses import RedirectResponse
-
 from decorators.auth import protected_route
 from endpoints.responses.romio import (
     RomioAcquisitionInput,
@@ -11,6 +8,7 @@ from endpoints.responses.romio import (
     RomioConnectionInput,
     RomioConnectionSchema,
     RomioGameSchema,
+    RomioHomeSchema,
     RomioId,
     RomioJobSchema,
     RomioLinkSchema,
@@ -21,6 +19,8 @@ from endpoints.responses.romio import (
     RomioSourcesInput,
     RomioSourcesSchema,
 )
+from fastapi import Path, Query, Request, Response
+from fastapi.responses import RedirectResponse
 from handler.auth.constants import Scope
 from handler.auth.dependencies import assert_admin, assert_can, get_permissions
 from handler.romio_handler import RomioError, romio_handler, validate_download_url
@@ -99,6 +99,18 @@ async def get_catalog(
         "catalog",
         RomioCatalogSchema,
         params={"system": system, "category": category, "q": q, "offset": offset},
+    )
+
+
+@protected_route(router.get, "/home", [Scope.ROMS_READ])
+async def get_home(
+    request: Request,
+    response: Response,
+    system: Annotated[str, Query(pattern=r"^[a-z0-9-]{1,40}$")] = "all",
+) -> RomioHomeSchema:
+    require_catalog_access(request, response)
+    return await romio_handler.request(
+        "GET", "home", RomioHomeSchema, params={"system": system}
     )
 
 

@@ -4,8 +4,11 @@ from pathlib import Path
 
 import handler.auth  # noqa: F401
 import handler.database  # noqa: F401
+import handler.romio_handler as romio_handler_module
+import handler.romio_metadata_handler as metadata_module
 import httpx
 import pytest
+import utils.context as context_module
 from endpoints import romio
 from fastapi import FastAPI
 from handler.auth.constants import FULL_SCOPES, Scope
@@ -16,8 +19,6 @@ from handler.romio_handler import (
     RomioHandler,
     parse_connection_link,
 )
-import handler.romio_handler as romio_handler_module
-import handler.romio_metadata_handler as metadata_module
 from models.permission import PermAction, PermEntity
 from models.user import Role
 from starlette.authentication import (
@@ -29,7 +30,6 @@ from starlette.authentication import (
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.requests import HTTPConnection
 from utils.context import create_romio_httpx_client, ctx_romio_httpx_client
-import utils.context as context_module
 
 TOKEN = "mock-addon-token-" + "a" * 40
 LINK = "https://romio.example/romio/addon#" + TOKEN
@@ -119,9 +119,11 @@ class MockAuthentication(AuthenticationBackend):
         conn.scope.setdefault("state", {})["permissions"] = ResolvedPermissions(
             is_admin=role == "admin",
             user_id=1,
-            grants=frozenset()
-            if role == "denied"
-            else frozenset({ResolvedGrant(PermEntity.ROMS, PermAction.READ, False)}),
+            grants=(
+                frozenset()
+                if role == "denied"
+                else frozenset({ResolvedGrant(PermEntity.ROMS, PermAction.READ, False)})
+            ),
             hidden_platform_ids=frozenset(),
             hidden_rom_ids=frozenset(),
         )
@@ -138,9 +140,9 @@ class Harness:
 
     def upstream(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
-        assert request.url.host == "romio.example", (
-            "No ROM/CDN request may reach the backend transport"
-        )
+        assert (
+            request.url.host == "romio.example"
+        ), "No ROM/CDN request may reach the backend transport"
         assert request.headers["authorization"] == "Bearer " + TOKEN
         assert TOKEN not in str(request.url)
         assert request.url.path.startswith("/romio/addon/v1/")
@@ -152,6 +154,17 @@ class Harness:
         if route == "catalog":
             return httpx.Response(
                 200, json={"items": [GAME], "offset": 0, "hasMore": False, "total": 1}
+            )
+        if route == "home":
+            return httpx.Response(
+                200,
+                json={
+                    "sections": [
+                        {"id": "top-rated", "title": "Top of all time", "items": []},
+                        {"id": "pokemon", "title": "Pokemon", "items": [GAME]},
+                    ],
+                    "language": "fr",
+                },
             )
         if route == "games/" + GAME_ID:
             return httpx.Response(200, json=GAME)
@@ -231,9 +244,9 @@ async def test_connection_is_admin_only_private_and_validated_before_replacement
     for role, status in [(None, 401), ("viewer", 403), ("denied", 403)]:
         response = await client.post(
             "/api/romio/connection",
-            headers=headers(role)
-            if role
-            else {"Authorization": "Bearer mock-identity"},
+            headers=(
+                headers(role) if role else {"Authorization": "Bearer mock-identity"}
+            ),
             json={"link": LINK},
         )
         assert response.status_code == status
@@ -281,6 +294,31 @@ async def test_catalog_requires_real_auth_and_grants_and_serializes_contract(har
     assert (
         await client.get("/api/romio/catalog?offset=1", headers=headers())
     ).status_code == 422
+    assert len(state.requests) == before + 1
+
+
+async def test_home_requires_catalog_access_and_preserves_server_language(harness):
+    state, client = harness
+    await connect(client)
+    for role, status in [(None, 401), ("kiosk", 401), ("denied", 403)]:
+        response = await client.get(
+            "/api/romio/home", headers=headers(role) if role else {}
+        )
+        assert response.status_code == status
+    before = len(state.requests)
+    response = await client.get(
+        "/api/romio/home?system=gba&language=en", headers=headers("viewer")
+    )
+    assert response.status_code == 200
+    assert response.json()["language"] == "fr"
+    assert response.json()["sections"][0]["items"] == []
+    assert response.json()["sections"][1]["items"] == [GAME]
+    assert response.headers["cache-control"] == "no-store"
+    assert len(state.requests) == before + 1
+    assert state.requests[-1].url.path.endswith("/home")
+    assert dict(state.requests[-1].url.params) == {"system": "gba"}
+    invalid = await client.get("/api/romio/home?system=bad/system", headers=headers())
+    assert invalid.status_code == 422
     assert len(state.requests) == before + 1
 
 

@@ -9,12 +9,11 @@ from typing import TypeVar
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
-from fastapi import HTTPException
-from pydantic import BaseModel, SecretStr, ValidationError
-
 from config import ROMIO_TRUSTED_INTERNAL_ORIGIN
 from config.config_manager import ROMM_USER_CONFIG_PATH
 from endpoints.responses.romio import RomioConnectionSchema, RomioManifestSchema
+from fastapi import HTTPException
+from pydantic import BaseModel, SecretStr, ValidationError
 from utils.context import ctx_romio_httpx_client
 from utils.ssrf import validate_url_for_http_request
 
@@ -175,7 +174,7 @@ class RomioHandler:
         client = ctx_romio_httpx_client.get()
         try:
             async with (
-                asyncio.timeout(135),
+                asyncio.timeout(28),
                 client.stream(
                     method,
                     connection.base_url + "/addon/v1/" + route,
@@ -187,7 +186,7 @@ class RomioHandler:
                     params=params,
                     json=payload,
                     follow_redirects=False,
-                    timeout=httpx.Timeout(130, connect=10),
+                    timeout=httpx.Timeout(27, connect=5),
                 ) as response,
             ):
                 if 300 <= response.status_code < 400:

@@ -3,10 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { RomioGameSchema } from './RomioGameSchema';
-export type RomioCatalogSchema = {
+export type RomioHomeSectionSchema = {
+    id: string;
+    title: string;
     items: Array<RomioGameSchema>;
-    offset: number;
-    hasMore: boolean;
-    total: number;
-    language?: 'en' | 'es' | 'fr' | 'ru' | 'zh' | 'ja';
 };

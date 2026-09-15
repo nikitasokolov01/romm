@@ -186,7 +186,7 @@ describe("source preparation lifecycle", () => {
     expect(mocks.acquire).toHaveBeenCalledExactlyOnceWith(candidate.id);
     expect(wrapper.find("progress").attributes("value")).toBe("50");
     expect(wrapper.find(".remote-player").exists()).toBe(false);
-    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(7000);
     await flushPromises();
     expect(wrapper.find(".remote-player").exists()).toBe(true);
     expect(mocks.acquire).toHaveBeenCalledTimes(1);
@@ -207,6 +207,68 @@ describe("source preparation lifecycle", () => {
     expect(mocks.acquire).toHaveBeenCalledTimes(1);
     expect(wrapper.text()).toContain("romio.uncertain");
     expect(wrapper.text()).not.toContain("romio.choose-another-copy");
+    wrapper.unmount();
+  });
+
+  it("keeps polling after a transient status failure", async () => {
+    mocks.job
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValue({ data: job("ready") });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    await wrapper
+      .findAll("button")
+      .find((button) => button.text() === "romio.browser")!
+      .trigger("click");
+    await flushPromises();
+    await vi.advanceTimersByTimeAsync(7000);
+    expect(wrapper.text()).toContain("romio.status-retry");
+    await vi.advanceTimersByTimeAsync(7000);
+    await flushPromises();
+    expect(mocks.job).toHaveBeenCalledTimes(2);
+    expect(wrapper.find(".remote-player").exists()).toBe(true);
+    expect(mocks.acquire).toHaveBeenCalledTimes(1);
+    wrapper.unmount();
+  });
+
+  it("retries restoring a remembered job after a transient failure", async () => {
+    localStorage.setItem(
+      `romio-choice:${location.origin}:1:${game.id}`,
+      JSON.stringify({ candidateId: candidate.id, jobId: "d".repeat(64) }),
+    );
+    mocks.job
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValue({ data: job("ready") });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    expect(wrapper.text()).toContain("romio.status-retry");
+    await vi.advanceTimersByTimeAsync(7000);
+    await flushPromises();
+    expect(mocks.job).toHaveBeenCalledTimes(2);
+    expect(wrapper.text()).toContain("romio.state-ready");
+    expect(mocks.acquire).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
+  it("shows provider stages and an honest checked time without a fabricated percentage", async () => {
+    mocks.acquire.mockResolvedValue({
+      data: {
+        ...job(),
+        progress: 0,
+        stage: "verify_file",
+        checkedAt: 1700000000000,
+      },
+    });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    await wrapper
+      .findAll("button")
+      .find((button) => button.text() === "romio.browser")!
+      .trigger("click");
+    await flushPromises();
+    expect(wrapper.text()).toContain("romio.stage-verify-file");
+    expect(wrapper.text()).toContain("romio.last-checked");
+    expect(wrapper.text()).not.toContain("0%");
     wrapper.unmount();
   });
 

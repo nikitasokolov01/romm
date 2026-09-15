@@ -294,3 +294,5 @@ export type { RomioMetadataStatusSchema } from './models/RomioMetadataStatusSche
 export type { RomioMetadataSyncInput } from './models/RomioMetadataSyncInput';
 export type { RomioMetadataSyncItemSchema } from './models/RomioMetadataSyncItemSchema';
 export type { RomioMetadataSyncSchema } from './models/RomioMetadataSyncSchema';
+export type { RomioHomeSchema } from './models/RomioHomeSchema';
+export type { RomioHomeSectionSchema } from './models/RomioHomeSectionSchema';

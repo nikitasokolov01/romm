@@ -11,7 +11,9 @@ Source: https://github.com/nikitasokolov01/romm/tree/romio-remote-library
 3. Search a title or filter by console/category. Choose a game, then a region/revision copy. Cached copies can become ready quickly; uncached copies show acquisition progress. The application remembers stable copy/job IDs, never expiring provider URLs.
 4. Choose browser playback on supported cores and formats, or pair the companion to install on this computer and launch an emulator you already installed.
 
-The default categories are All games and Retro. Ratings appear after an administrator syncs matching IGDB metadata. Configure the standard RomM `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET` environment settings, restart, then use the rating sync control in Discover. Only exact title/alias and console matches are accepted; ambiguous matches remain unrated. The sync handles at most 12 visible games per request. Awards require a separate attributed metadata source and are hidden while none exists. Covers currently come from attributed metadata; filenames are used to group source copies until provider metadata is matched.
+Discover opens with shelves for top-rated games, Pokémon, Zelda, Mario, Metroid and retro consoles. Search and shelf links open full results. Ratings require attributed metadata: configure RomM's `IGDB_CLIENT_ID` and `IGDB_CLIENT_SECRET`, restart, then use the rating sync control. Only exact title/alias and console matches are accepted; ambiguous matches remain unrated. The sync handles at most 12 visible games per request. The ratings shelf explains when metadata is missing. Awards require an attributed source and remain hidden without one.
+
+Romio Settings selects the ROM language for both applications: English (default), Spanish, French, Russian, Chinese or Japanese. Explicit filename language tags take precedence over country tags. Unknown language copies are excluded; a Europe or World tag alone does not establish English. Language changes filter the local index without reimporting collections. New acquisitions also enforce the current preference.
 
 ## Downloads and playback
 

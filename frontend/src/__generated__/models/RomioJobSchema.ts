@@ -10,4 +10,6 @@ export type RomioJobSchema = {
     error?: (string | null);
     updatedAt: number;
     candidate: RomioCandidateSchema;
+    stage?: ('account_lookup' | 'source_metadata' | 'provider_submit' | 'inspect' | 'verify_file' | 'submitting' | 'reconciling' | 'downloading' | 'ready' | 'failed' | null);
+    checkedAt?: (number | null);
 };

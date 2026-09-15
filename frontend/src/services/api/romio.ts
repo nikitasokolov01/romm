@@ -8,6 +8,7 @@ import type {
   RomioSourcesSchema,
   RomioMetadataStatusSchema,
   RomioMetadataSyncSchema,
+  RomioHomeSchema,
 } from "@/__generated__";
 import api from "@/services/api";
 
@@ -22,6 +23,8 @@ export default {
     api.post<RomioConnectionSchema>("/romio/connection", { link }),
   disconnect: () => api.delete("/romio/connection"),
   manifest: () => api.get<RomioManifestSchema>("/romio/manifest"),
+  home: (system = "all", signal?: AbortSignal) =>
+    api.get<RomioHomeSchema>("/romio/home", { params: { system }, signal }),
   metadata: () => api.get<RomioMetadataStatusSchema>("/romio/metadata"),
   syncMetadata: (gameIds: string[]) =>
     api.post<RomioMetadataSyncSchema>("/romio/metadata/sync", { gameIds }),

@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from pydantic.alias_generators import to_camel
 
 RomioId = Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
+RomioLanguage = Literal["en", "es", "fr", "ru", "zh", "ja"]
 
 
 class RomioSchema(BaseModel):
@@ -47,6 +48,7 @@ class RomioManifestSchema(RomioSchema):
     categories: list[RomioCategorySchema] = Field(max_length=20)
     capabilities: RomioCapabilitiesSchema
     catalog_ready: bool
+    language: RomioLanguage = "en"
 
 
 class RomioGameSchema(RomioSchema):
@@ -69,6 +71,18 @@ class RomioCatalogSchema(RomioSchema):
     offset: int = Field(ge=0)
     has_more: bool
     total: int = Field(ge=0)
+    language: RomioLanguage = "en"
+
+
+class RomioHomeSectionSchema(RomioSchema):
+    id: str = Field(max_length=40)
+    title: str = Field(max_length=100)
+    items: list[RomioGameSchema] = Field(max_length=18)
+
+
+class RomioHomeSchema(RomioSchema):
+    sections: list[RomioHomeSectionSchema] = Field(max_length=12)
+    language: RomioLanguage
 
 
 class RomioSourceSchema(RomioSchema):
@@ -122,6 +136,22 @@ class RomioJobSchema(RomioSchema):
     error: str | None = Field(default=None, max_length=200)
     updated_at: int = Field(ge=0)
     candidate: RomioCandidateSchema
+    stage: (
+        Literal[
+            "account_lookup",
+            "source_metadata",
+            "provider_submit",
+            "inspect",
+            "verify_file",
+            "submitting",
+            "reconciling",
+            "downloading",
+            "ready",
+            "failed",
+        ]
+        | None
+    ) = None
+    checked_at: int | None = Field(default=None, ge=0)
 
 
 class RomioLinkSchema(RomioSchema):
