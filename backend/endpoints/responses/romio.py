@@ -141,6 +141,7 @@ class RomioJobSchema(RomioSchema):
             "account_lookup",
             "source_metadata",
             "provider_submit",
+            "provider_sync",
             "inspect",
             "verify_file",
             "submitting",
@@ -152,6 +153,7 @@ class RomioJobSchema(RomioSchema):
         | None
     ) = None
     checked_at: int | None = Field(default=None, ge=0)
+    provider_updated_at: int | None = Field(default=None, ge=0)
 
 
 class RomioLinkSchema(RomioSchema):

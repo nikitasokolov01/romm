@@ -165,18 +165,23 @@ const providerStage = computed(() => {
       return t("romio.stage-source-metadata");
     case "provider_submit":
       return t("romio.stage-provider-submit");
+    case "provider_sync":
+      return t("romio.stage-provider-sync");
     case "verify_file":
       return t("romio.stage-verify-file");
     default:
       return null;
   }
 });
-const checkedTime = computed(() => {
-  const timestamp = job.value?.checkedAt;
+function formatTimestamp(timestamp: number | null | undefined) {
   return timestamp && Number.isFinite(timestamp)
     ? new Date(timestamp).toLocaleTimeString()
     : null;
-});
+}
+const checkedTime = computed(() => formatTimestamp(job.value?.checkedAt));
+const providerUpdatedTime = computed(() =>
+  formatTimestamp(job.value?.providerUpdatedAt),
+);
 
 async function loadSources() {
   loading.value = true;
@@ -611,6 +616,9 @@ onScopeDispose(() => {
         <p v-if="stateCode" class="mt-3">{{ stateCode }}</p>
         <p v-if="checkedTime && !nativeJob" class="text-caption mt-3">
           {{ t("romio.last-checked", { time: checkedTime }) }}
+        </p>
+        <p v-if="providerUpdatedTime && !nativeJob" class="text-caption mt-3">
+          {{ t("romio.provider-updated", { time: providerUpdatedTime }) }}
         </p>
         <p
           v-if="

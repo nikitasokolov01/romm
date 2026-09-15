@@ -344,6 +344,28 @@ async def test_cookie_mutations_keep_romm_csrf_protection(harness):
     assert accepted.status_code == 202
 
 
+@pytest.mark.parametrize("provider_updated_at", [1700000000000, None])
+async def test_job_preserves_provider_sync_and_independent_timestamps(
+    harness, monkeypatch, provider_updated_at
+):
+    _, client = harness
+    await connect(client)
+    monkeypatch.setitem(JOB, "state", "downloading")
+    monkeypatch.setitem(JOB, "progress", 0)
+    monkeypatch.setitem(JOB, "stage", "provider_sync")
+    monkeypatch.setitem(JOB, "checkedAt", 1700000300000)
+    monkeypatch.setitem(JOB, "providerUpdatedAt", provider_updated_at)
+    response = await client.get(
+        f"/api/romio/acquisitions/{CANDIDATE_ID}", headers=headers("viewer")
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["stage"] == "provider_sync"
+    assert payload["progress"] == 0
+    assert payload["checkedAt"] == 1700000300000
+    assert payload["providerUpdatedAt"] == provider_updated_at
+
+
 async def test_source_selection_acquisition_and_fresh_redirect_never_proxy_file_bytes(
     harness,
 ):

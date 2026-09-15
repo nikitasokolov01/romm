@@ -21,6 +21,9 @@ import homeFixture from "./romio-home.fixture.json";
 
 const fixtureHome: RomioHomeSchema = { ...homeFixture, language: "en" };
 const sections = fixtureHome.sections;
+const providerSyncFixture = new URLSearchParams(location.search).has(
+  "provider-sync",
+);
 const games: RomioGameSchema[] = [
   ...new Map(
     sections.flatMap((section) => section.items).map((game) => [game.id, game]),
@@ -145,7 +148,10 @@ api.defaults.adapter = async (config) => {
     data = {
       id: "d".repeat(64),
       state: "downloading",
-      progress: 0.42,
+      progress: providerSyncFixture ? 0 : 0.42,
+      stage: providerSyncFixture ? "provider_sync" : "downloading",
+      checkedAt: Date.now(),
+      providerUpdatedAt: providerSyncFixture ? Date.now() - 240000 : null,
       updatedAt: 1,
       candidate: currentCandidate,
       error: null,

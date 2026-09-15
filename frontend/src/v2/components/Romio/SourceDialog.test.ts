@@ -15,7 +15,12 @@ const mocks = vi.hoisted(() => ({
   companionLaunch: vi.fn(),
   companionInstall: vi.fn(),
 }));
-vi.mock("vue-i18n", () => ({ useI18n: () => ({ t: (key: string) => key }) }));
+vi.mock("vue-i18n", () => ({
+  useI18n: () => ({
+    t: (key: string, params?: { time?: string }) =>
+      params?.time ? `${key}: ${params.time}` : key,
+  }),
+}));
 vi.mock("@/services/api/romio", () => ({ default: mocks }));
 vi.mock("@/services/romio-companion", () => ({
   companion: {
@@ -66,8 +71,12 @@ vi.mock("@v2/lib", () => ({
   RSpinner: defineComponent({ template: "<span />" }),
   RSelect: defineComponent({ template: "<span />" }),
   RProgressLinear: defineComponent({
-    props: { modelValue: { type: Number, default: 0 } },
-    template: '<progress :value="modelValue" max="100" />',
+    props: {
+      modelValue: { type: Number, default: 0 },
+      indeterminate: { type: Boolean, default: false },
+    },
+    template:
+      '<progress :value="modelValue" :data-indeterminate="indeterminate" max="100" />',
   }),
 }));
 
@@ -269,6 +278,69 @@ describe("source preparation lifecycle", () => {
     expect(wrapper.text()).toContain("romio.stage-verify-file");
     expect(wrapper.text()).toContain("romio.last-checked");
     expect(wrapper.text()).not.toContain("0%");
+    wrapper.unmount();
+  });
+
+  it("waits for provider synchronization and distinguishes provider time from our check", async () => {
+    const checkedAt = 1700000300000;
+    const providerUpdatedAt = 1700000000000;
+    mocks.acquire.mockResolvedValue({
+      data: {
+        ...job(),
+        progress: 0,
+        stage: "provider_sync",
+        checkedAt,
+        providerUpdatedAt,
+      },
+    });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    await wrapper
+      .findAll("button")
+      .find((button) => button.text() === "romio.browser")!
+      .trigger("click");
+    await flushPromises();
+    expect(wrapper.text()).toContain("romio.stage-provider-sync");
+    expect(wrapper.text()).toContain(
+      `romio.last-checked: ${new Date(checkedAt).toLocaleTimeString()}`,
+    );
+    expect(wrapper.text()).toContain(
+      `romio.provider-updated: ${new Date(providerUpdatedAt).toLocaleTimeString()}`,
+    );
+    expect(wrapper.text()).not.toContain("0%");
+    expect(wrapper.find("progress").attributes("data-indeterminate")).toBe(
+      "true",
+    );
+    await vi.advanceTimersByTimeAsync(7000);
+    await flushPromises();
+    expect(wrapper.text()).not.toContain("romio.stage-provider-sync");
+    expect(wrapper.find(".remote-player").exists()).toBe(true);
+    expect(mocks.acquire).toHaveBeenCalledTimes(1);
+    wrapper.unmount();
+  });
+
+  it("omits the provider timestamp when the provider did not supply one", async () => {
+    mocks.acquire.mockResolvedValue({
+      data: {
+        ...job(),
+        progress: 0,
+        stage: "provider_sync",
+        checkedAt: 1700000300000,
+        providerUpdatedAt: null,
+      },
+    });
+    const wrapper = mount(SourceDialog, { props: { game } });
+    await flushPromises();
+    await wrapper
+      .findAll("button")
+      .find((button) => button.text() === "romio.browser")!
+      .trigger("click");
+    await flushPromises();
+    expect(wrapper.text()).toContain("romio.last-checked");
+    expect(wrapper.text()).not.toContain("romio.provider-updated");
+    expect(wrapper.find("progress").attributes("data-indeterminate")).toBe(
+      "true",
+    );
     wrapper.unmount();
   });
 
